@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import { Task } from '@/types';
+import { createNotification } from '@/lib/notifications';
 
 type TaskStore = {
   tasks: Task[];
@@ -129,6 +130,34 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
     const newStatus = task.status === 'completed' ? 'pending' : 'completed';
     const completedAt = newStatus === 'completed' ? new Date().toISOString() : null;
+
+    if (newStatus === 'completed' && task.is_daily_priority) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await createNotification(
+          user.id,
+          'Priority Smashed! 💥',
+          `You've completed one of your daily priorities: ${task.title}. Keep that momentum!`,
+          'task'
+        );
+      }
+    }
+
+    // Check for Clean Sweep (all 'now' tasks completed)
+    if (newStatus === 'completed') {
+      const remainingNowTasks = get().tasks.filter(t => t.priority === 'now' && t.status !== 'completed' && t.id !== id);
+      if (remainingNowTasks.length === 0 && task.priority === 'now') {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await createNotification(
+            user.id,
+            'Clean Sweep! 🧹',
+            'You have finished all your high-priority tasks for today. Outstanding!',
+            'success'
+          );
+        }
+      }
+    }
 
     await get().updateTask(id, { status: newStatus, completed_at: completedAt });
   },

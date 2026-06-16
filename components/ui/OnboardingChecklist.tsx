@@ -21,7 +21,7 @@ export default function OnboardingChecklist() {
   if (isAllDone) return null;
 
   return (
-    <View className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+    <View className="bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
       <View className="bg-indigo-600 p-6 flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
           <View className="w-12 h-12 bg-white/20 rounded-2xl items-center justify-center">
@@ -38,7 +38,7 @@ export default function OnboardingChecklist() {
         </View>
       </View>
 
-      <View className="p-4 flex-row flex-wrap gap-2 bg-gray-50">
+      <View className="p-4 flex-row flex-wrap gap-2 bg-gray-50 dark:bg-gray-800/50">
         {CHECKLIST_ITEMS.map((item) => {
           const isDone = !!progress[item.id as keyof typeof progress];
           const Icon = item.icon;
@@ -47,20 +47,20 @@ export default function OnboardingChecklist() {
               key={item.id}
               className={`flex-1 min-w-[45%] p-3 rounded-2xl border-2 items-center text-center gap-2 ${
                 isDone 
-                  ? 'border-emerald-500/20 bg-emerald-50' 
-                  : 'border-white bg-white'
+                  ? 'border-emerald-500/20 bg-emerald-50 dark:bg-emerald-900/20' 
+                  : 'border-white dark:border-gray-800 bg-white dark:bg-gray-800'
               }`}
             >
-              <View className={`p-2 rounded-xl ${isDone ? 'bg-emerald-100' : 'bg-gray-100'}`}>
+              <View className={`p-2 rounded-xl ${isDone ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-gray-100 dark:bg-gray-700'}`}>
                 <Icon size={20} color={isDone ? '#10B981' : '#9CA3AF'} />
               </View>
-              <Text className={`text-[10px] font-black uppercase ${isDone ? 'text-emerald-700' : 'text-gray-900'}`}>
+              <Text className={`text-[10px] font-black uppercase ${isDone ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-900 dark:text-white'}`}>
                 {item.label}
               </Text>
               {isDone ? (
                 <CheckCircle2 size={16} color="#10B981" />
               ) : (
-                <View className="w-4 h-4 rounded-full border-2 border-gray-200" />
+                <View className="w-4 h-4 rounded-full border-2 border-gray-200 dark:border-gray-600" />
               )}
             </View>
           );

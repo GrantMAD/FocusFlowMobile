@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+import { Layers } from 'lucide-react-native';
 
 const TYPES = [
   { id: 'pomodoro', title: 'Pomodoro' },
@@ -10,17 +11,29 @@ const TYPES = [
 
 export default function SessionTypeSelector({ onSelect, selectedId }: { onSelect: (id: string) => void, selectedId: string }) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Session Type</Text>
+    <View className="mt-4">
+      <View className="flex-row items-center gap-2 mb-4">
+        <Layers size={18} color="#7C3AED" />
+        <Text className="text-lg font-black text-gray-900 dark:text-white">Session Type</Text>
+      </View>
       <FlatList
         data={TYPES}
         horizontal
+        showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity 
-            style={[styles.btn, selectedId === item.id && styles.activeBtn]} 
             onPress={() => onSelect(item.id)}
+            className={`px-6 py-4 rounded-2xl border-2 transition-all mr-3 ${
+              selectedId === item.id 
+                ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20' 
+                : 'border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800'
+            }`}
           >
-            <Text>{item.title}</Text>
+            <Text className={`font-bold ${
+              selectedId === item.id ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'
+            }`}>
+              {item.title}
+            </Text>
           </TouchableOpacity>
         )}
         keyExtractor={item => item.id}
@@ -28,10 +41,3 @@ export default function SessionTypeSelector({ onSelect, selectedId }: { onSelect
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { marginTop: 20 },
-  title: { fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
-  btn: { padding: 12, backgroundColor: '#F3F4F6', borderRadius: 12, marginRight: 10 },
-  activeBtn: { backgroundColor: '#E9D5FF' }
-});

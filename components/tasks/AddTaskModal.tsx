@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, Switch } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Modal, Switch, ScrollView, Platform } from 'react-native';
 import { useTaskStore } from '@/stores/taskStore';
-import { X } from 'lucide-react-native';
+import { X, Flag, Calendar } from 'lucide-react-native';
 
 type Props = {
   isOpen: boolean;
@@ -31,72 +31,96 @@ export default function AddTaskModal({ isOpen, onClose }: Props) {
     onClose();
   };
 
+  const priorityColors = {
+    now: 'border-red-500 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400',
+    next: 'border-orange-500 bg-orange-50 dark:bg-orange-900/10 text-orange-600 dark:text-orange-400',
+    later: 'border-blue-500 bg-blue-50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400',
+    brain_dump: 'border-purple-500 bg-purple-50 dark:bg-purple-900/10 text-purple-600 dark:text-purple-400',
+  };
+
   return (
     <Modal visible={isOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>New Task</Text>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <X size={24} color="#6B7280" />
+      <View className="flex-1 bg-white dark:bg-gray-900 p-8">
+        <View className="flex-row justify-between items-center mb-8">
+          <Text className="text-2xl font-black text-gray-900 dark:text-white">New Task</Text>
+          <TouchableOpacity onPress={onClose} className="p-2 bg-gray-50 dark:bg-gray-800 rounded-full">
+            <X size={20} color="#6B7280" />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.form}>
-          <TextInput
-            placeholder="What needs to be done?"
-            value={title}
-            onChangeText={setTitle}
-            style={styles.input}
-            autoFocus
-          />
-          <TextInput
-            placeholder="Add more details..."
-            value={notes}
-            onChangeText={setNotes}
-            style={[styles.input, styles.textArea]}
-            multiline
-          />
-          
-          <View style={styles.row}>
-            <Text style={styles.label}>Priority</Text>
-            {/* Simple priority selector placeholder - can be improved to a real select component */}
-            <TouchableOpacity onPress={() => setPriority('now')} style={[styles.priorityBtn, priority === 'now' && styles.selected]}>
-                <Text>Now</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setPriority('next')} style={[styles.priorityBtn, priority === 'next' && styles.selected]}>
-                <Text>Next</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setPriority('later')} style={[styles.priorityBtn, priority === 'later' && styles.selected]}>
-                <Text>Later</Text>
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <View className="space-y-6">
+            <View>
+              <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 ml-1">Task Title</Text>
+              <TextInput
+                placeholder="What needs to be done?"
+                placeholderTextColor="#9CA3AF"
+                value={title}
+                onChangeText={setTitle}
+                className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-4 rounded-2xl border border-gray-100 dark:border-gray-700 font-bold text-gray-900 dark:text-white"
+                autoFocus
+              />
+            </View>
+
+            <View>
+              <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 ml-1">Notes (Optional)</Text>
+              <TextInput
+                placeholder="Add more details..."
+                placeholderTextColor="#9CA3AF"
+                value={notes}
+                onChangeText={setNotes}
+                className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-4 rounded-2xl border border-gray-100 dark:border-gray-700 font-bold text-gray-900 dark:text-white h-32"
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
+            
+            <View>
+              <View className="flex-row items-center gap-2 mb-3 ml-1">
+                <Flag size={14} color="#7C3AED" />
+                <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Priority</Text>
+              </View>
+              <View className="flex-row gap-2 flex-wrap">
+                {(['now', 'next', 'later'] as const).map((p) => (
+                  <TouchableOpacity 
+                    key={p}
+                    onPress={() => setPriority(p)} 
+                    className={`px-6 py-3 rounded-xl border-2 transition-all ${
+                      priority === p ? priorityColors[p] : 'border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800'
+                    }`}
+                  >
+                    <Text className={`font-bold capitalize ${priority === p ? '' : 'text-gray-400 dark:text-gray-500'}`}>
+                      {p}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            <View className="flex-row items-center justify-between bg-gray-50 dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700">
+              <View className="flex-row items-center gap-3">
+                <View className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                  <Calendar size={18} color="#7C3AED" />
+                </View>
+                <Text className="font-bold text-gray-700 dark:text-gray-300">Set as Daily Priority</Text>
+              </View>
+              <Switch 
+                value={isDailyPriority} 
+                onValueChange={setIsDailyPriority}
+                trackColor={{ false: '#E5E7EB', true: '#7C3AED' }}
+                thumbColor={Platform.OS === 'ios' ? '#FFFFFF' : isDailyPriority ? '#FFFFFF' : '#F3F4F6'}
+              />
+            </View>
+
+            <TouchableOpacity 
+              onPress={handleSubmit} 
+              className="w-full bg-purple-600 py-5 rounded-2xl items-center shadow-lg shadow-purple-200 dark:shadow-none mt-4"
+            >
+              <Text className="text-white font-black uppercase tracking-widest">Create Task</Text>
             </TouchableOpacity>
           </View>
-
-          <View style={styles.row}>
-            <Text>Daily Priority</Text>
-            <Switch value={isDailyPriority} onValueChange={setIsDailyPriority} />
-          </View>
-
-          <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-            <Text style={styles.submitText}>Create Task</Text>
-          </TouchableOpacity>
-        </View>
+        </ScrollView>
       </View>
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: 'white' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  title: { fontSize: 20, fontWeight: 'bold' },
-  closeButton: { padding: 5 },
-  form: { gap: 15 },
-  input: { borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, padding: 12, fontSize: 16 },
-  textArea: { height: 100 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  label: { fontWeight: 'bold' },
-  priorityBtn: { padding: 10, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 8 },
-  selected: { backgroundColor: '#E9D5FF' },
-  submitButton: { backgroundColor: '#7C3AED', padding: 16, borderRadius: 12, alignItems: 'center' },
-  submitText: { color: 'white', fontWeight: 'bold', fontSize: 16 }
-});

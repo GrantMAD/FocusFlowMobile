@@ -23,14 +23,14 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
   }
 
   return (
-    <View className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-      <Text className="text-lg font-black text-gray-900 mb-6">Focus Minutes (Last 7 Days)</Text>
+    <View className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
+      <Text className="text-lg font-black text-gray-900 dark:text-white mb-6">Focus Minutes (Last 7 Days)</Text>
       
       <View className="flex-row h-64">
         {/* Y-Axis Labels - Positioned towards the left edge */}
         <View className="justify-between pr-4 pb-8 -ml-2">
           {yAxisLabels.map((label, i) => (
-            <Text key={i} className="text-[9px] font-black text-gray-300 text-right w-6">
+            <Text key={i} className="text-[9px] font-black text-gray-300 dark:text-gray-600 text-right w-6">
               {label}
             </Text>
           ))}
@@ -50,7 +50,7 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
                       style={{ height: `${height}%`, minHeight: day.minutes > 0 ? 4 : 0 }}
                     />
                   </View>
-                  <Text className="text-[9px] font-black text-gray-400 mt-3 uppercase">
+                  <Text className="text-[9px] font-black text-gray-400 dark:text-gray-500 mt-3 uppercase">
                     {day.day.substring(0, 3)}
                   </Text>
                 </View>
@@ -63,7 +63,7 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
       <View className="mt-8 flex-row items-center justify-center gap-4">
         <View className="flex-row items-center gap-2">
           <View className="w-3 h-3 bg-purple-600 rounded-full" />
-          <Text className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Minutes</Text>
+          <Text className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Minutes</Text>
         </View>
       </View>
     </View>

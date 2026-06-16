@@ -38,22 +38,22 @@ export function WinsFeed() {
   }
 
   return (
-    <View className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm mt-8">
+    <View className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm mt-8">
       <View className="flex-row items-center gap-2 mb-6">
         <Trophy size={20} color="#EAB308" />
-        <Text className="text-lg font-black text-gray-900">Recent Wins</Text>
+        <Text className="text-lg font-black text-gray-900 dark:text-white">Recent Wins</Text>
       </View>
       
       <View className="gap-3">
         {wins.length === 0 ? (
-          <Text className="text-gray-500 text-center py-4">No completed tasks yet. Keep going!</Text>
+          <Text className="text-gray-500 dark:text-gray-400 text-center py-4">No completed tasks yet. Keep going!</Text>
         ) : (
           wins.map((win, i) => (
-            <View key={i} className="p-4 bg-gray-50 rounded-2xl">
-              <Text className="font-bold text-gray-900 mb-1" numberOfLines={1}>
+            <View key={i} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl">
+              <Text className="font-bold text-gray-900 dark:text-white mb-1" numberOfLines={1}>
                 {win.title}
               </Text>
-              <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+              <Text className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                 {win.completed_at ? formatDistanceToNow(new Date(win.completed_at), { addSuffix: true }) : 'Just now'}
               </Text>
             </View>

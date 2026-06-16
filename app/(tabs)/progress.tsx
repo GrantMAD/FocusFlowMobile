@@ -74,7 +74,7 @@ export default function Progress() {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <ScrollView 
         className="flex-1"
         refreshControl={
@@ -84,7 +84,7 @@ export default function Progress() {
         {/* Hero Header */}
         <LinearGradient
           colors={['#7C3AED', '#4F46E5']}
-          className="pt-20 pb-24 px-8"
+          className="pt-10 pb-20 px-8"
         >
           <View>
             <Text className="text-4xl font-black text-white">Progress</Text>

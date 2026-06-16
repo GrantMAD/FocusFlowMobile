@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Play, Pause, X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useFocusStore } from '@/stores/focusStore';
@@ -32,28 +32,30 @@ export default function FocusTimer() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.modeText}>{mode === 'work' ? 'Focus Time' : 'Break Time'}</Text>
-      <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+    <View className="items-center my-10 bg-white dark:bg-gray-900 p-10 rounded-[40px] border border-gray-100 dark:border-gray-800 shadow-xl shadow-purple-100 dark:shadow-none">
+      <Text className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-[4px] mb-4">
+        {mode === 'work' ? 'Focus Time' : 'Break Time'}
+      </Text>
       
-      <View style={styles.controls}>
-        <TouchableOpacity style={styles.controlButton} onPress={handlePauseResume}>
-          {isActive ? <Pause size={32} color="#FFFFFF" /> : <Play size={32} color="#FFFFFF" />}
+      <Text className="text-8xl font-black text-gray-900 dark:text-white tabular-nums mb-10">
+        {formatTime(timeLeft)}
+      </Text>
+      
+      <View className="flex-row gap-6">
+        <TouchableOpacity 
+          className="bg-purple-600 w-20 h-20 rounded-full items-center justify-center shadow-lg shadow-purple-300 dark:shadow-none" 
+          onPress={handlePauseResume}
+        >
+          {isActive ? <Pause size={32} color="#FFFFFF" /> : <Play size={32} color="#FFFFFF" className="ml-1" />}
         </TouchableOpacity>
         
-        <TouchableOpacity style={[styles.controlButton, styles.endButton]} onPress={handleEnd}>
+        <TouchableOpacity 
+          className="bg-red-500 w-20 h-20 rounded-full items-center justify-center shadow-lg shadow-red-200 dark:shadow-none" 
+          onPress={handleEnd}
+        >
           <X size={32} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { alignItems: 'center', marginVertical: 40 },
-  modeText: { fontSize: 18, color: '#6B7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 2 },
-  timerText: { fontSize: 80, fontWeight: '900', color: '#1F2937' },
-  controls: { flexDirection: 'row', gap: 20, marginTop: 30 },
-  controlButton: { backgroundColor: '#7C3AED', padding: 20, borderRadius: 50 },
-  endButton: { backgroundColor: '#EF4444' }
-});

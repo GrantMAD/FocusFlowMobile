@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import { FocusSession } from '@/types';
+import { createNotification } from '@/lib/notifications';
 
 type FocusStore = {
   currentSession: Partial<FocusSession> | null;
@@ -63,6 +64,36 @@ export const useFocusStore = create<FocusStore>((set, get) => ({
     };
 
     await supabase.from('focus_sessions').insert([sessionData]);
+
+    if (completed) {
+      // 1. Success notification for the session
+      await createNotification(
+        user.id,
+        'Deep Work Complete! 🎯',
+        `Great job! You just banked ${currentSession.planned_minutes} minutes of focused work.`,
+        'success',
+        '/progress'
+      );
+
+      // 2. Check for daily goal reached (e.g., 60 mins)
+      const today = new Date().toISOString().split('T')[0];
+      const { data: stats } = await supabase.rpc('get_weekly_stats', { 
+        p_user_id: user.id,
+        p_start_date: today
+      });
+
+      const totalToday = stats?.[0]?.total_focus_minutes || 0;
+      const prevTotal = totalToday - (currentSession.planned_minutes || 0);
+
+      if (totalToday >= 60 && prevTotal < 60) {
+        await createNotification(
+          user.id,
+          'Daily Goal Reached! 🔥',
+          "You've hit 60 minutes of focus today! You're on fire.",
+          'streak'
+        );
+      }
+    }
 
     set({
       currentSession: null,

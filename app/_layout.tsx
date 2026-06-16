@@ -4,6 +4,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore } from '@/stores/authStore';
+import { useColorScheme } from "nativewind";
 import "../global.css";
 
 // Keep the splash screen visible while we fetch resources
@@ -15,6 +16,14 @@ export default function RootLayout() {
   const { session, isLoading, profile } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
+  const { setColorScheme } = useColorScheme();
+
+  // Sync profile theme with NativeWind
+  useEffect(() => {
+    if (profile?.theme) {
+      setColorScheme(profile.theme as "light" | "dark" | "system");
+    }
+  }, [profile?.theme]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -48,6 +57,7 @@ export default function RootLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="notifications" options={{ presentation: 'modal' }} />
     </Stack>
   );
 }

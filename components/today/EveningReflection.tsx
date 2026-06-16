@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, Alert, ActivityIndicator } fro
 import { Moon, Pill, MessageSquare, CheckCircle2, Star, Zap } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { createNotification } from '@/lib/notifications';
 
 const MOODS = [
   { value: 1, label: '😩' },
@@ -88,31 +89,39 @@ export default function EveningReflection() {
       setReflection(prev => ({ ...prev, evening_reflection_completed: true }));
       completeOnboardingStep('reflection');
       Alert.alert('Success', 'Reflection completed!');
+      if (user) {
+        await createNotification(
+          user.id,
+          'Evening Reflection Done! 🌙',
+          'You completed your daily reflection. Time to rest your mind.',
+          'success'
+        );
+      }
     }
     setIsSaving(false);
   };
 
   if (isLoading) {
     return (
-      <View className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm h-64 items-center justify-center">
+      <View className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm h-64 items-center justify-center">
         <ActivityIndicator color="#4F46E5" />
       </View>
     );
   }
 
   return (
-    <View className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+    <View className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
       <View className="flex-row items-center justify-between mb-6">
         <View>
           <View className="flex-row items-center gap-2">
             <Moon size={20} color="#4F46E5" />
-            <Text className="text-xl font-bold text-gray-900">Evening Reflection</Text>
+            <Text className="text-xl font-bold text-gray-900 dark:text-white">Evening Reflection</Text>
           </View>
-          <Text className="text-sm text-gray-500">Wind down and celebrate small wins.</Text>
+          <Text className="text-sm text-gray-500 dark:text-gray-400">Wind down and celebrate small wins.</Text>
         </View>
         {reflection.evening_reflection_completed && (
-          <View className="px-3 py-1 bg-indigo-100 rounded-full">
-            <Text className="text-indigo-700 text-xs font-bold uppercase">Done</Text>
+          <View className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 rounded-full">
+            <Text className="text-indigo-700 dark:text-indigo-400 text-xs font-bold uppercase">Done</Text>
           </View>
         )}
       </View>
@@ -122,7 +131,7 @@ export default function EveningReflection() {
         <View>
           <View className="flex-row items-center gap-2 mb-3">
             <Star size={16} color="#FACC15" />
-            <Text className="text-sm font-bold text-gray-700">How was your day?</Text>
+            <Text className="text-sm font-bold text-gray-700 dark:text-gray-300">How was your day?</Text>
           </View>
           <View className="flex-row justify-between">
             {MOODS.map(mood => (
@@ -131,8 +140,8 @@ export default function EveningReflection() {
                 onPress={() => handleUpdate({ mood_evening: mood.value })}
                 className={`w-[18%] aspect-square rounded-2xl border-2 items-center justify-center ${
                   reflection.mood_evening === mood.value 
-                    ? 'border-indigo-600 bg-indigo-50' 
-                    : 'border-gray-50 bg-gray-50'
+                    ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' 
+                    : 'border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800'
                 }`}
               >
                 <Text className="text-2xl">{mood.label}</Text>
@@ -145,7 +154,7 @@ export default function EveningReflection() {
         <View>
           <View className="flex-row items-center gap-2 mb-3">
             <Zap size={16} color="#F97316" />
-            <Text className="text-sm font-bold text-gray-700">Energy Levels</Text>
+            <Text className="text-sm font-bold text-gray-700 dark:text-gray-300">Energy Levels</Text>
           </View>
           <View className="flex-row gap-2">
             {ENERGY_LEVELS.map(level => (
@@ -154,12 +163,12 @@ export default function EveningReflection() {
                 onPress={() => handleUpdate({ energy_level: level.value })}
                 className={`flex-1 py-3 rounded-xl border-2 items-center justify-center ${
                   reflection.energy_level === level.value 
-                    ? 'border-orange-500 bg-orange-50' 
-                    : 'border-gray-50 bg-gray-50'
+                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' 
+                    : 'border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800'
                 }`}
               >
                 <Text className={`text-[10px] font-bold uppercase ${
-                  reflection.energy_level === level.value ? 'text-orange-700' : 'text-gray-400'
+                  reflection.energy_level === level.value ? 'text-orange-700 dark:text-orange-400' : 'text-gray-400 dark:text-gray-500'
                 }`}>
                   {level.label}
                 </Text>
@@ -173,23 +182,23 @@ export default function EveningReflection() {
           onPress={() => handleUpdate({ medication_taken: !reflection.medication_taken })}
           className={`flex-row items-start gap-4 p-4 rounded-2xl border-2 ${
             reflection.medication_taken 
-              ? 'border-green-600 bg-green-50' 
-              : 'border-gray-50 bg-gray-50'
+              ? 'border-green-600 bg-green-50 dark:bg-green-900/20' 
+              : 'border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800'
           }`}
         >
-          <View className={`p-2 rounded-xl ${reflection.medication_taken ? 'bg-green-100' : 'bg-gray-200'}`}>
+          <View className={`p-2 rounded-xl ${reflection.medication_taken ? 'bg-green-100 dark:bg-green-900/30' : 'bg-gray-200 dark:bg-gray-700'}`}>
             <Pill size={20} color={reflection.medication_taken ? '#16A34A' : '#6B7280'} />
           </View>
           <View className="flex-1">
-            <Text className={`font-bold text-sm ${reflection.medication_taken ? 'text-green-900' : 'text-gray-900'}`}>
+            <Text className={`font-bold text-sm ${reflection.medication_taken ? 'text-green-900 dark:text-green-400' : 'text-gray-900 dark:text-white'}`}>
               Medication
             </Text>
-            <Text className="text-xs text-gray-500">Did you take your meds?</Text>
+            <Text className="text-xs text-gray-500 dark:text-gray-400">Did you take your meds?</Text>
           </View>
           {reflection.medication_taken ? (
             <CheckCircle2 size={20} color="#16A34A" />
           ) : (
-            <View className="w-5 h-5 rounded-full border-2 border-gray-300" />
+            <View className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600" />
           )}
         </TouchableOpacity>
 
@@ -201,9 +210,10 @@ export default function EveningReflection() {
           <TextInput
             multiline
             placeholder="Notes, wins, or reflections..."
+            placeholderTextColor="#9CA3AF"
             value={reflection.notes}
             onChangeText={(text) => handleUpdate({ notes: text })}
-            className="w-full min-h-[100px] pl-12 pr-4 py-4 bg-gray-50 border-2 border-gray-50 text-gray-900 rounded-2xl text-sm"
+            className="w-full min-h-[100px] pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border-2 border-gray-50 dark:border-gray-700 text-gray-900 dark:text-white rounded-2xl text-sm"
             textAlignVertical="top"
           />
         </View>

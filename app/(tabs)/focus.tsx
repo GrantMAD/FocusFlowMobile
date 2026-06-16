@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, StyleSheet, Modal, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, Modal, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import FocusTimer from '@/components/focus/FocusTimer';
 import AmbientSoundPicker from '@/components/focus/AmbientSoundPicker';
 import SessionTypeSelector from '@/components/focus/SessionTypeSelector';
@@ -26,63 +27,63 @@ export default function Focus() {
   };
 
   return (
-    <View style={styles.container}>
-      <FocusTimer />
-      <SessionTypeSelector selectedId={sessionType} onSelect={handleTypeSelect} />
-      <AmbientSoundPicker />
-
-      <Modal visible={showPreModal} animationType="slide" presentationStyle="pageSheet">
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Ready to Focus?</Text>
-          
-          {sessionType === 'custom' && (
-            <View>
-              <Text style={styles.label}>Duration (minutes)</Text>
-              <TextInput 
-                style={styles.input}
-                value={customDuration}
-                onChangeText={setCustomDuration}
-                keyboardType="numeric"
-              />
-            </View>
-          )}
-
-          <Text style={styles.label}>How are you feeling?</Text>
-          <View style={styles.moodContainer}>
-            {MOODS.map((mood, index) => (
-              <TouchableOpacity 
-                key={index} 
-                style={[styles.moodBtn, moodBefore === index + 1 && styles.activeMoodBtn]}
-                onPress={() => setMoodBefore(index + 1)}
-              >
-                <Text style={styles.moodText}>{mood}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <TouchableOpacity style={styles.startBtn} onPress={handleStart}>
-            <Text style={styles.startBtnText}>Start Focusing</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowPreModal(false)}>
-            <Text>Cancel</Text>
-          </TouchableOpacity>
+    <View className="flex-1 bg-white dark:bg-gray-950">
+      <ScrollView className="flex-1 p-6" contentContainerStyle={{ paddingBottom: 40 }}>
+        <View className="mb-6">
+          <Text className="text-3xl font-black text-gray-900 dark:text-white">Focus</Text>
+          <Text className="text-lg font-medium text-gray-500 dark:text-gray-400">Deep work starts now.</Text>
         </View>
-      </Modal>
+
+        <FocusTimer />
+        <SessionTypeSelector selectedId={sessionType} onSelect={handleTypeSelect} />
+        <AmbientSoundPicker />
+
+        <Modal visible={showPreModal} animationType="slide" presentationStyle="pageSheet">
+          <View className="flex-1 bg-white dark:bg-gray-900 p-8 justify-center">
+            <Text className="text-3xl font-black text-gray-900 dark:text-white mb-8 text-center">Ready to Focus?</Text>
+            
+            {sessionType === 'custom' && (
+              <View className="mb-6">
+                <Text className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 ml-1">Duration (minutes)</Text>
+                <TextInput 
+                  className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-4 rounded-2xl border border-gray-100 dark:border-gray-700 font-bold text-gray-900 dark:text-white"
+                  value={customDuration}
+                  onChangeText={setCustomDuration}
+                  keyboardType="numeric"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+            )}
+
+            <Text className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4 ml-1">How are you feeling?</Text>
+            <View className="flex-row justify-between mb-8">
+              {MOODS.map((mood, index) => (
+                <TouchableOpacity 
+                  key={index} 
+                  className={`p-4 rounded-2xl ${moodBefore === index + 1 ? 'bg-purple-100 dark:bg-purple-900/30' : 'bg-gray-50 dark:bg-gray-800'}`}
+                  onPress={() => setMoodBefore(index + 1)}
+                >
+                  <Text className="text-2xl">{mood}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity 
+              className="bg-purple-600 py-5 rounded-2xl items-center shadow-lg"
+              onPress={handleStart}
+            >
+              <Text className="text-white font-black uppercase tracking-widest">Start Focusing</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              className="py-4 items-center mt-2" 
+              onPress={() => setShowPreModal(false)}
+            >
+              <Text className="text-gray-500 dark:text-gray-400 font-bold">Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'white', padding: 20 },
-  startBtn: { backgroundColor: '#7C3AED', padding: 16, borderRadius: 12, alignItems: 'center', marginTop: 20 },
-  startBtnText: { color: 'white', fontWeight: 'bold' },
-  cancelBtn: { padding: 16, alignItems: 'center' },
-  input: { borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, padding: 12, marginBottom: 20, fontSize: 16 },
-  modalContent: { flex: 1, padding: 20, justifyContent: 'center' },
-  modalTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  label: { fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
-  moodContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  moodBtn: { padding: 15, borderRadius: 12, backgroundColor: '#F3F4F6' },
-  activeMoodBtn: { backgroundColor: '#E9D5FF' },
-  moodText: { fontSize: 24 }
-});

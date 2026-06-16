@@ -55,16 +55,16 @@ export function StatsGrid({
       {stats.map((stat) => (
         <View 
           key={stat.label} 
-          className={`w-[48%] bg-white p-5 rounded-3xl border-l-4 ${stat.borderColor} shadow-sm`}
+          className={`w-[48%] bg-white dark:bg-gray-900 p-5 rounded-3xl border-l-4 ${stat.borderColor} shadow-sm`}
           style={{ elevation: 2 }}
         >
           <View className={`w-10 h-10 ${stat.bg} rounded-xl flex items-center justify-center mb-3 shadow-md`}>
             <stat.icon size={20} color={stat.color} />
           </View>
-          <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
+          <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">
             {stat.label}
           </Text>
-          <Text className="text-2xl font-black text-gray-900">
+          <Text className="text-2xl font-black text-gray-900 dark:text-white">
             {stat.value}
           </Text>
         </View>

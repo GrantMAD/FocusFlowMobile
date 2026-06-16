@@ -3,6 +3,7 @@ import { View, TextInput, TouchableOpacity, Text } from 'react-native';
 import { Plus, Brain } from 'lucide-react-native';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
+import { createNotification } from '@/lib/notifications';
 
 export default function QuickCapture() {
   const [content, setContent] = useState('');
@@ -29,16 +30,22 @@ export default function QuickCapture() {
         
       completeOnboardingStep('braindump');
       setContent('');
+      await createNotification(
+        user.id,
+        'Captured! 🧠',
+        "That's one less thing to worry about. We've saved it to your brain dump.",
+        'info'
+      );
     }
     setIsSubmitting(false);
   };
 
   return (
-    <View className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-      <View className="p-6 border-b border-gray-100 bg-purple-50/50">
+    <View className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+      <View className="p-6 border-b border-gray-100 dark:border-gray-800 bg-purple-50/50 dark:bg-purple-900/10">
         <View className="flex-row items-center gap-2 mb-4">
           <Brain size={20} color="#9333EA" />
-          <Text className="font-bold text-gray-900">Brain Dump</Text>
+          <Text className="font-bold text-gray-900 dark:text-white">Brain Dump</Text>
         </View>
         
         <View className="flex-row gap-2">
@@ -46,7 +53,8 @@ export default function QuickCapture() {
             value={content}
             onChangeText={setContent}
             placeholder="What's on your mind?"
-            className="flex-1 bg-white border border-gray-200 text-gray-900 rounded-2xl px-4 py-3"
+            placeholderTextColor="#9CA3AF"
+            className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-2xl px-4 py-3"
           />
           <TouchableOpacity
             onPress={handleSubmit}
@@ -56,7 +64,7 @@ export default function QuickCapture() {
             <Plus size={24} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
-        <Text className="mt-2 text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+        <Text className="mt-2 text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">
           Quickly capture thoughts to clear your head.
         </Text>
       </View>

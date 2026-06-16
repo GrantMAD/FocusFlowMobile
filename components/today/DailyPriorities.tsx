@@ -48,10 +48,10 @@ export default function DailyPriorities() {
   }, [user, fetchTasks]);
 
   return (
-    <View className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+    <View className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
       <View className="flex-row items-center justify-between mb-4">
-        <Text className="text-xl font-bold text-gray-900">Daily Priorities</Text>
-        <Text className="text-sm font-medium text-gray-400">
+        <Text className="text-xl font-bold text-gray-900 dark:text-white">Daily Priorities</Text>
+        <Text className="text-sm font-medium text-gray-400 dark:text-gray-500">
           {priorities.filter(p => p.status === 'completed').length} / {priorities.length}
         </Text>
       </View>
@@ -61,7 +61,7 @@ export default function DailyPriorities() {
           <TouchableOpacity
             key={task.id}
             onPress={() => toggleTask(task.id)}
-            className="flex-row items-center gap-3 p-3 rounded-2xl border border-gray-50 bg-gray-50"
+            className="flex-row items-center gap-3 p-3 rounded-2xl border border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800"
           >
             {task.status === 'completed' ? (
               <CheckCircle2 size={24} color="#22C55E" />
@@ -69,7 +69,7 @@ export default function DailyPriorities() {
               <Circle size={24} color="#D1D5DB" />
             )}
             <Text className={`flex-1 font-medium ${
-              task.status === 'completed' ? 'text-gray-400 line-through' : 'text-gray-900'
+              task.status === 'completed' ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-900 dark:text-white'
             }`}>
               {task.title}
             </Text>
@@ -79,10 +79,10 @@ export default function DailyPriorities() {
         {priorities.length < 3 && (
           <TouchableOpacity 
             onPress={() => router.push('/modal/add-task')}
-            className="flex-row items-center gap-2 p-3 rounded-2xl border-2 border-dashed border-gray-100"
+            className="flex-row items-center gap-2 p-3 rounded-2xl border-2 border-dashed border-gray-100 dark:border-gray-800"
           >
             <Plus size={20} color="#9CA3AF" />
-            <Text className="text-sm font-semibold text-gray-400">Set a priority</Text>
+            <Text className="text-sm font-semibold text-gray-400 dark:text-gray-500">Set a priority</Text>
           </TouchableOpacity>
         )}
       </View>

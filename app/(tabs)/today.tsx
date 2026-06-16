@@ -9,11 +9,11 @@ import QuickCapture from '@/components/today/QuickCapture';
 
 export default function Today() {
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <ScrollView className="flex-1 p-6" contentContainerStyle={{ gap: 24, paddingBottom: 40 }}>
         <View>
-          <Text className="text-4xl font-black text-gray-900">Today</Text>
-          <Text className="text-lg font-medium text-gray-500">Let's make today count.</Text>
+          <Text className="text-4xl font-black text-gray-900 dark:text-white">Today</Text>
+          <Text className="text-lg font-medium text-gray-500 dark:text-gray-400">Let's make today count.</Text>
         </View>
 
         <OnboardingChecklist />
@@ -23,6 +23,6 @@ export default function Today() {
         <MorningRitual />
         <EveningReflection />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
