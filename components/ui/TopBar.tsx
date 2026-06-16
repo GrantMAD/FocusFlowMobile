@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -7,7 +7,8 @@ import {
   ScrollView, 
   Pressable,
   Animated,
-  Dimensions
+  Dimensions,
+  Easing
 } from 'react-native';
 import { 
   Menu, 
@@ -26,6 +27,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { formatDistanceToNow } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useColorScheme } from 'nativewind';
 
 const { width } = Dimensions.get('window');
 
@@ -43,6 +45,17 @@ export default function TopBar() {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  
+  const slideAnim = useRef(new Animated.Value(-320)).current;
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: isMenuOpen ? 0 : -320,
+      duration: 300,
+      easing: Easing.ease,
+      useNativeDriver: true,
+    }).start();
+  }, [isMenuOpen]);
 
   useEffect(() => {
     if (user) {
@@ -64,6 +77,8 @@ export default function TopBar() {
   };
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'User';
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   return (
     <>
@@ -72,7 +87,6 @@ export default function TopBar() {
         className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-gray-900 z-50"
       >
         <View className="h-16 px-6 flex-row items-center justify-between">
-          {/* Hamburger Menu */}
           <TouchableOpacity 
             onPress={() => setIsMenuOpen(true)}
             className="p-2 -ml-2"
@@ -80,10 +94,8 @@ export default function TopBar() {
             <Menu size={24} color="#6B7280" />
           </TouchableOpacity>
 
-          {/* Logo/Title */}
           <Text className="text-xl font-black text-purple-600">FocusFlow</Text>
 
-          {/* Notification Bell */}
           <TouchableOpacity 
             onPress={() => setIsNotifOpen(true)}
             className="p-2 -mr-2 relative"
@@ -118,7 +130,6 @@ export default function TopBar() {
               maxWidth: 400
             }}
           >
-            {/* Arrow */}
             <View 
               style={{
                 width: 0,
@@ -161,7 +172,7 @@ export default function TopBar() {
                         setIsNotifOpen(false);
                         if (n.link) router.push(n.link as any);
                       }}
-                      className={`p-4 border-b border-gray-50 dark:border-gray-800 flex-row gap-3 ${!n.is_read ? 'bg-purple-50/30 dark:bg-purple-900/5' : ''}`}
+                      className={`p-4 border-b border-gray-50 dark:border-gray-800 flex-row gap-3 ${!n.is_read ? 'bg-purple-50/30 dark:bg-purple-900/10' : ''}`}
                     >
                       <View className="p-2 bg-gray-50 dark:bg-gray-800 rounded-xl h-10 w-10 items-center justify-center">
                         {getIcon(n.type)}
@@ -198,14 +209,14 @@ export default function TopBar() {
         onRequestClose={() => setIsMenuOpen(false)}
       >
         <View className="flex-1 flex-row">
-          {/* Backdrop */}
-          <Pressable 
-            onPress={() => setIsMenuOpen(false)}
-            className="flex-1 bg-black/50"
-          />
-          
-          {/* Side Menu */}
-          <View className="w-80 bg-white dark:bg-gray-900 h-full p-8 shadow-2xl">
+          <Animated.View 
+            style={{ 
+              width: 320, 
+              transform: [{ translateX: slideAnim }],
+              backgroundColor: isDark ? '#111827' : '#FFFFFF'
+            }}
+            className="h-full p-8 shadow-2xl z-50"
+          >
             <View style={{ paddingTop: insets.top }}>
               <View className="flex-row justify-between items-center mb-10">
                 <Text className="text-2xl font-black text-gray-900 dark:text-white">Menu</Text>
@@ -255,7 +266,13 @@ export default function TopBar() {
                 <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-[4px]">FocusFlow v1.0.0</Text>
               </View>
             </View>
-          </View>
+          </Animated.View>
+
+          {/* Backdrop */}
+          <Pressable 
+            onPress={() => setIsMenuOpen(false)}
+            className="flex-1 bg-black/50"
+          />
         </View>
       </Modal>
     </>

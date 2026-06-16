@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { View, Modal, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import FocusTimer from '@/components/focus/FocusTimer';
 import AmbientSoundPicker from '@/components/focus/AmbientSoundPicker';
 import SessionTypeSelector from '@/components/focus/SessionTypeSelector';
 import { useFocusStore } from '@/stores/focusStore';
+import { GradientHeader } from '@/components/ui/GradientHeader';
 
 const MOODS = ['😩', '😕', '😐', '🙂', '🤩'];
 
@@ -28,12 +28,8 @@ export default function Focus() {
 
   return (
     <View className="flex-1 bg-white dark:bg-gray-950">
+      <GradientHeader title="Focus" subtitle="Deep work starts now." />
       <ScrollView className="flex-1 p-6" contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="mb-6">
-          <Text className="text-3xl font-black text-gray-900 dark:text-white">Focus</Text>
-          <Text className="text-lg font-medium text-gray-500 dark:text-gray-400">Deep work starts now.</Text>
-        </View>
-
         <FocusTimer />
         <SessionTypeSelector selectedId={sessionType} onSelect={handleTypeSelect} />
         <AmbientSoundPicker />

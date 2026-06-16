@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Coffee, Brain, PenTool, CheckCircle, CheckCircle2, Circle } from 'lucide-react-native';
-import { BlurView } from 'expo-blur';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { createNotification } from '@/lib/notifications';
@@ -24,15 +23,18 @@ const MOODS = [
 export default function MorningRitual() {
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [moodMorning, setMoodMorning] = useState<number | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [hasNotified, setHasNotified] = useState(false);
   const { user, completeOnboardingStep } = useAuthStore();
 
   useEffect(() => {
-    fetchRitualStatus();
+    fetchRitualStatus().then(() => setIsInitialized(true));
   }, []);
 
   const fetchRitualStatus = async () => {
     if (!user) return;
 
+    // Use RPC to get/create daily log
     const { data: log, error } = await supabase
       .rpc('get_or_create_daily_log', { p_user_id: user.id });
 
@@ -47,6 +49,7 @@ export default function MorningRitual() {
         .map(step => step.id);
       setCompletedSteps(activeSteps);
       setMoodMorning(log.mood_morning);
+      if (log.morning_ritual_completed) setHasNotified(true);
     }
   };
 
@@ -89,8 +92,9 @@ export default function MorningRitual() {
   const isRitualComplete = completedSteps.length === ritualSteps.length;
 
   useEffect(() => {
-    if (isRitualComplete) {
+    if (isRitualComplete && isInitialized && !hasNotified) {
       completeOnboardingStep('ritual');
+      setHasNotified(true);
       if (user) {
         createNotification(
           user.id,
@@ -100,7 +104,7 @@ export default function MorningRitual() {
         );
       }
     }
-  }, [isRitualComplete, user]);
+  }, [isRitualComplete, isInitialized, hasNotified, user]);
 
   return (
     <View className="p-6 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">

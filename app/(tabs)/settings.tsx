@@ -10,7 +10,6 @@ import {
   KeyboardAvoidingView,
   Platform
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { 
   User, 
   Palette, 
@@ -22,13 +21,14 @@ import {
 } from 'lucide-react-native';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscription } from '@/hooks/useSubscription';
+import { GradientHeader } from '@/components/ui/GradientHeader';
 
 type TabType = 'profile' | 'appearance' | 'subscription';
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState<TabType>('profile');
   const { profile, user, updateProfile, signOut } = useAuthStore();
-  const { isPro, status } = useSubscription();
+  const { isPro } = useSubscription();
 
   const [fullName, setFullName] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
@@ -73,16 +73,7 @@ export default function Settings() {
       className="flex-1 bg-gray-50 dark:bg-gray-950"
     >
       <ScrollView className="flex-1">
-        {/* Hero Header */}
-        <LinearGradient
-          colors={['#7C3AED', '#4F46E5']}
-          className="pt-10 pb-20 px-8"
-        >
-          <View>
-            <Text className="text-4xl font-black text-white">Settings</Text>
-            <Text className="text-purple-100 font-medium">Manage your experience.</Text>
-          </View>
-        </LinearGradient>
+        <GradientHeader title="Settings" subtitle="Manage your experience." />
 
         {/* Tab Navigation */}
         <View className="px-6 -mt-8">
@@ -152,14 +143,6 @@ export default function Settings() {
                     <Text className="text-white font-black uppercase tracking-widest">Save Changes</Text>
                   </>
                 )}
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                onPress={() => signOut()}
-                className="w-full bg-red-50 dark:bg-red-950/20 py-4 rounded-2xl flex-row items-center justify-center gap-2 border border-red-100 dark:border-red-900/30 mt-4"
-              >
-                <LogOut size={18} color="#EF4444" />
-                <Text className="text-red-600 dark:text-red-400 font-black uppercase tracking-widest">Sign Out</Text>
               </TouchableOpacity>
             </View>
           )}

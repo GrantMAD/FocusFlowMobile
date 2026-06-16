@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Text, ActivityIndicator, RefreshControl } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+import { ScrollView, View, ActivityIndicator, RefreshControl } from 'react-native';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { StatsGrid } from '@/components/progress/StatsGrid';
 import { WeeklyChart } from '@/components/progress/WeeklyChart';
 import { WinsFeed } from '@/components/progress/WinsFeed';
+import { GradientHeader } from '@/components/ui/GradientHeader';
 
 export default function Progress() {
   const { user } = useAuthStore();
@@ -67,7 +66,7 @@ export default function Progress() {
 
   if (isLoading && !isRefreshing) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
+      <View className="flex-1 justify-center items-center bg-gray-50 dark:bg-gray-950">
         <ActivityIndicator size="large" color="#7C3AED" />
       </View>
     );
@@ -75,25 +74,15 @@ export default function Progress() {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+      <GradientHeader title="Progress" subtitle="Your focus journey, visualized." />
       <ScrollView 
         className="flex-1"
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor="#7C3AED" />
         }
       >
-        {/* Hero Header */}
-        <LinearGradient
-          colors={['#7C3AED', '#4F46E5']}
-          className="pt-10 pb-20 px-8"
-        >
-          <View>
-            <Text className="text-4xl font-black text-white">Progress</Text>
-            <Text className="text-purple-100 font-medium">Your focus journey, visualized.</Text>
-          </View>
-        </LinearGradient>
-
         {/* Content Area */}
-        <View className="px-6 -mt-12 pb-12">
+        <View className="px-6 py-6 pb-12">
           {stats && (
             <StatsGrid 
               totalTasksCompleted={Number(stats.total_tasks_completed)}
