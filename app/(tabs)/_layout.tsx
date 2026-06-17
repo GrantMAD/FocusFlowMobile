@@ -35,6 +35,15 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
+          name="brain-dump"
+          options={{
+            title: 'Brain Dump',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="bulb" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="focus"
           options={{
             title: 'Focus',
@@ -58,15 +67,6 @@ export default function TabsLayout() {
             title: 'Progress',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="stats-chart" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: 'Settings',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="settings" size={size} color={color} />
             ),
           }}
         />

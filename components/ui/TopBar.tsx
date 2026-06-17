@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Modal, 
-  ScrollView, 
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
   Pressable,
   Animated,
   Dimensions,
   Easing
 } from 'react-native';
-import { 
-  Menu, 
-  Bell, 
-  Settings, 
-  LogOut, 
-  X, 
-  CheckCircle2, 
+import {
+  Menu,
+  Bell,
+  Settings,
+  LogOut,
+  X,
+  CheckCircle2,
   AlertCircle,
   Zap,
   Calendar,
@@ -28,6 +28,7 @@ import { useNotificationStore } from '@/stores/notificationStore';
 import { formatDistanceToNow } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'nativewind';
+import { BlurView } from 'expo-blur';
 
 const { width } = Dimensions.get('window');
 
@@ -35,17 +36,17 @@ export default function TopBar() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { signOut, user, profile } = useAuthStore();
-  const { 
-    notifications, 
-    unreadCount, 
-    subscribeToNotifications, 
+  const {
+    notifications,
+    unreadCount,
+    subscribeToNotifications,
     fetchNotifications,
     markAsRead
   } = useNotificationStore();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  
+
   const slideAnim = useRef(new Animated.Value(-320)).current;
 
   useEffect(() => {
@@ -82,12 +83,12 @@ export default function TopBar() {
 
   return (
     <>
-      <View 
+      <View
         style={{ paddingTop: insets.top }}
         className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-gray-900 z-50"
       >
         <View className="h-16 px-6 flex-row items-center justify-between">
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setIsMenuOpen(true)}
             className="p-2 -ml-2"
           >
@@ -96,7 +97,7 @@ export default function TopBar() {
 
           <Text className="text-xl font-black text-purple-600">FocusFlow</Text>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setIsNotifOpen(true)}
             className="p-2 -mr-2 relative"
           >
@@ -117,20 +118,20 @@ export default function TopBar() {
         animationType="fade"
         onRequestClose={() => setIsNotifOpen(false)}
       >
-        <Pressable 
-          className="flex-1 bg-black/10" 
+        <Pressable
+          className="flex-1 bg-black/10"
           onPress={() => setIsNotifOpen(false)}
         >
-          <View 
-            style={{ 
-              position: 'absolute', 
-              top: insets.top + 60, 
-              right: 20, 
+          <View
+            style={{
+              position: 'absolute',
+              top: insets.top + 60,
+              right: 20,
               width: width * 0.85,
               maxWidth: 400
             }}
           >
-            <View 
+            <View
               style={{
                 width: 0,
                 height: 0,
@@ -156,7 +157,7 @@ export default function TopBar() {
                   <X size={14} color="#9CA3AF" />
                 </TouchableOpacity>
               </View>
-              
+
               <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
                 {notifications.length === 0 ? (
                   <View className="py-12 items-center">
@@ -165,7 +166,7 @@ export default function TopBar() {
                   </View>
                 ) : (
                   notifications.slice(0, 5).map((n) => (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       key={n.id}
                       onPress={() => {
                         markAsRead(n.id);
@@ -187,7 +188,7 @@ export default function TopBar() {
                 )}
               </ScrollView>
 
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => {
                   setIsNotifOpen(false);
                   router.push('/notifications');
@@ -209,70 +210,138 @@ export default function TopBar() {
         onRequestClose={() => setIsMenuOpen(false)}
       >
         <View className="flex-1 flex-row">
-          <Animated.View 
-            style={{ 
-              width: 320, 
-              transform: [{ translateX: slideAnim }],
-              backgroundColor: isDark ? '#111827' : '#FFFFFF'
-            }}
-            className="h-full p-8 shadow-2xl z-50"
-          >
-            <View style={{ paddingTop: insets.top }}>
-              <View className="flex-row justify-between items-center mb-10">
-                <Text className="text-2xl font-black text-gray-900 dark:text-white">Menu</Text>
-                <TouchableOpacity onPress={() => setIsMenuOpen(false)} className="p-2 bg-gray-50 dark:bg-gray-800 rounded-full">
-                  <X size={20} color="#6B7280" />
-                </TouchableOpacity>
-              </View>
-
-              <View className="items-center mb-10">
-                <View className="w-20 h-20 bg-purple-600 rounded-3xl items-center justify-center mb-4">
-                  <Text className="text-3xl font-black text-white uppercase">{displayName[0]}</Text>
-                </View>
-                <Text className="text-lg font-black text-gray-900 dark:text-white">{displayName}</Text>
-                <Text className="text-sm text-gray-500">{user?.email}</Text>
-              </View>
-
-              <View className="space-y-2">
-                <TouchableOpacity 
-                  onPress={() => {
-                    setIsMenuOpen(false);
-                    router.push('/(tabs)/settings');
-                  }}
-                  className="flex-row items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
-                >
-                  <View className="p-2 bg-white dark:bg-gray-900 rounded-xl">
-                    <Settings size={20} color="#7C3AED" />
-                  </View>
-                  <Text className="flex-1 font-bold text-gray-700 dark:text-gray-300">Settings</Text>
-                  <ChevronRight size={16} color="#9CA3AF" />
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  onPress={() => {
-                    setIsMenuOpen(false);
-                    signOut();
-                  }}
-                  className="flex-row items-center gap-4 p-4 rounded-2xl border border-red-100 dark:border-red-900/20"
-                >
-                  <View className="p-2 bg-red-50 dark:bg-red-900/10 rounded-xl">
-                    <LogOut size={20} color="#EF4444" />
-                  </View>
-                  <Text className="flex-1 font-bold text-red-600 dark:text-red-400">Sign Out</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View className="mt-auto items-center">
-                <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-[4px]">FocusFlow v1.0.0</Text>
-              </View>
-            </View>
-          </Animated.View>
-
           {/* Backdrop */}
-          <Pressable 
+          <Pressable
             onPress={() => setIsMenuOpen(false)}
-            className="flex-1 bg-black/50"
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)' }}
           />
+
+          <Animated.View
+            style={{
+              width: 300,
+              transform: [{ translateX: slideAnim }],
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              overflow: 'hidden',
+            }}
+          >
+            {/* Glass background layer */}
+            <BlurView
+              intensity={60}
+              tint={isDark ? 'dark' : 'light'}
+              style={{ flex: 1, paddingHorizontal: 20, paddingBottom: 32 }}
+            >
+              {/* Overlay tint on top of blur */}
+              <View
+                style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                  backgroundColor: isDark ? 'rgba(30,10,60,0.45)' : 'rgba(180,140,255,0.18)',
+                  borderRightWidth: 0.5,
+                  borderRightColor: 'rgba(255,255,255,0.2)',
+                }}
+              />
+
+              <View style={{ paddingTop: insets.top }}>
+                {/* Header row */}
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 28, marginTop: 12 }}>
+                  <TouchableOpacity
+                    onPress={() => setIsMenuOpen(false)}
+                    style={{
+                      width: 32, height: 32, borderRadius: 16,
+                      backgroundColor: 'rgba(255,255,255,0.12)',
+                      borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.25)',
+                      alignItems: 'center', justifyContent: 'center',
+                    }}
+                  >
+                    <X size={16} color="rgba(255,255,255,0.85)" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Profile section */}
+                <View style={{
+                  alignItems: 'center', gap: 10, marginBottom: 28,
+                  paddingBottom: 24,
+                  borderBottomWidth: 0.5, borderBottomColor: 'rgba(255,255,255,0.15)',
+                }}>
+                  <View style={{
+                    width: 68, height: 68, borderRadius: 22,
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.35)',
+                    alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Text style={{ fontSize: 26, fontWeight: '700', color: 'white' }}>
+                      {displayName[0].toUpperCase()}
+                    </Text>
+                  </View>
+                  <View style={{ alignItems: 'center', gap: 2 }}>
+                    <Text style={{ fontSize: 15, fontWeight: '600', color: 'rgba(255,255,255,0.95)' }}>
+                      {displayName}
+                    </Text>
+                    <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                      {user?.email}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Menu items */}
+                <View style={{ gap: 8 }}>
+                  <TouchableOpacity
+                    onPress={() => { setIsMenuOpen(false); router.push('/settings'); }}
+                    style={{
+                      flexDirection: 'row', alignItems: 'center', gap: 14,
+                      padding: 13, borderRadius: 14,
+                      backgroundColor: 'rgba(255,255,255,0.08)',
+                      borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.12)',
+                    }}
+                  >
+                    <View style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      backgroundColor: 'rgba(255,255,255,0.12)',
+                      borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.18)',
+                      alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Settings size={18} color="rgba(255,255,255,0.85)" />
+                    </View>
+                    <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.9)' }}>
+                      Settings
+                    </Text>
+                    <ChevronRight size={16} color="rgba(255,255,255,0.35)" />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => { setIsMenuOpen(false); signOut(); }}
+                    style={{
+                      flexDirection: 'row', alignItems: 'center', gap: 14,
+                      padding: 13, borderRadius: 14,
+                      backgroundColor: 'rgba(239,68,68,0.12)',
+                      borderWidth: 0.5, borderColor: 'rgba(239,68,68,0.25)',
+                    }}
+                  >
+                    <View style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      backgroundColor: 'rgba(239,68,68,0.15)',
+                      borderWidth: 0.5, borderColor: 'rgba(239,68,68,0.25)',
+                      alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <LogOut size={18} color="#fca5a5" />
+                    </View>
+                    <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: '#fca5a5' }}>
+                      Sign Out
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Version */}
+                <View style={{ marginTop: 'auto', paddingTop: 40, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: 3, textTransform: 'uppercase' }}>
+                    FocusFlow v1.0.0
+                  </Text>
+                </View>
+              </View>
+            </BlurView>
+          </Animated.View>
         </View>
       </Modal>
     </>
