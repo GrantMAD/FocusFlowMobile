@@ -1,42 +1,22 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text } from 'react-native';
 import { Plus, Brain } from 'lucide-react-native';
+import { useBrainDumpStore } from '@/stores/brainDumpStore';
 import { useAuthStore } from '@/stores/authStore';
-import { supabase } from '@/lib/supabase';
-import { createNotification } from '@/lib/notifications';
 
 export default function QuickCapture() {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user, completeOnboardingStep } = useAuthStore();
+  const { addItem } = useBrainDumpStore();
+  const { completeOnboardingStep } = useAuthStore();
 
   const handleSubmit = async () => {
-    if (!content.trim() || isSubmitting || !user) return;
+    if (!content.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
-    
-    // Add to brain_dump_items
-    const { error } = await supabase
-      .from('brain_dump_items')
-      .insert([{ user_id: user.id, content: content.trim() }]);
-
-    if (!error) {
-      // Update daily log status
-      await supabase
-        .from('daily_logs')
-        .update({ brain_dump_completed: true })
-        .eq('user_id', user.id)
-        .eq('date', new Date().toISOString().split('T')[0]);
-        
-      completeOnboardingStep('braindump');
-      setContent('');
-      await createNotification(
-        user.id,
-        'Captured! 🧠',
-        "That's one less thing to worry about. We've saved it to your brain dump.",
-        'info'
-      );
-    }
+    await addItem(content.trim());
+    completeOnboardingStep('braindump');
+    setContent('');
     setIsSubmitting(false);
   };
 

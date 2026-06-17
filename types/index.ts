@@ -17,6 +17,8 @@ export type Profile = {
   focus_work_duration: number;
   focus_break_duration: number;
   onboarding_completed: boolean;
+  onboarding_progress: Record<string, boolean>;
+  xp_amount: number;
   created_at: string;
   updated_at: string;
 };

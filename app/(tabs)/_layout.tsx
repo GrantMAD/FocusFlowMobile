@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
 import { View } from 'react-native';
 import TopBar from '@/components/ui/TopBar';
+import UniversalHelpFAB from '@/components/ui/UniversalHelpFAB';
 
 export default function TabsLayout() {
   const { colorScheme } = useColorScheme();
@@ -70,6 +71,7 @@ export default function TabsLayout() {
           }}
         />
       </Tabs>
+      <UniversalHelpFAB />
     </View>
   );
 }
