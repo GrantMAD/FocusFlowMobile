@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 
 export default function DailyPriorities() {
   const { tasks, toggleTask, fetchTasks } = useTaskStore();
-  const { user } = useAuthStore();
+  const { user, completeOnboardingStep } = useAuthStore();
   const priorities = tasks.filter(t => t.is_daily_priority);
 
   useEffect(() => {
@@ -20,6 +20,8 @@ export default function DailyPriorities() {
         .update({ daily_priorities_set: true })
         .eq('user_id', user.id)
         .eq('date', new Date().toISOString().split('T')[0]);
+
+      completeOnboardingStep('priorities');
     };
 
     updatePrioritiesSet();

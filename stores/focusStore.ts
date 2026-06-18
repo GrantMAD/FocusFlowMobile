@@ -8,12 +8,16 @@ type FocusStore = {
   isActive: boolean;
   timeLeft: number;
   mode: 'work' | 'break';
+  sessionsCompletedToday: number;
 
-  startSession: (type: FocusSession['session_type'], duration: number, taskId?: string) => void;
+  startSession: (type: FocusSession['session_type'], duration: number, taskId?: string, moodBefore?: number) => void;
   pauseSession: () => void;
   resumeSession: () => void;
-  endSession: (completed: boolean) => Promise<void>;
+  endSession: (completed: boolean, moodAfter?: number) => Promise<void>;
   tick: () => void;
+  settimeLeft: (time: number) => void;
+  fetchSessionsCompletedToday: () => Promise<void>;
+  canStartSession: () => Promise<boolean>;
 };
 
 export const useFocusStore = create<FocusStore>((set, get) => ({
@@ -21,14 +25,45 @@ export const useFocusStore = create<FocusStore>((set, get) => ({
   isActive: false,
   timeLeft: 15 * 60,
   mode: 'work',
+  sessionsCompletedToday: 0,
 
-  startSession: (type, duration, taskId) => {
+  canStartSession: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const { data, error } = await supabase.rpc('can_start_session', { p_user_id: user.id });
+    if (error) {
+      console.error('Error calling can_start_session:', error);
+      return false;
+    }
+    return data;
+  },
+
+  fetchSessionsCompletedToday: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const { count, error } = await supabase
+      .from('focus_sessions')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('completed', true)
+      .gte('started_at', `${today}T00:00:00Z`);
+
+    if (!error && count !== null) {
+      set({ sessionsCompletedToday: count });
+    }
+  },
+
+  startSession: (type, duration, taskId, moodBefore) => {
     set({
       currentSession: {
         session_type: type,
         planned_minutes: Math.floor(duration / 60),
         started_at: new Date().toISOString(),
         task_id: taskId,
+        mood_before: moodBefore,
       },
       isActive: true,
       timeLeft: duration,
@@ -48,29 +83,37 @@ export const useFocusStore = create<FocusStore>((set, get) => ({
     }
   },
 
-  endSession: async (completed) => {
-    const { currentSession } = get();
+  settimeLeft: (time) => set({ timeLeft: time }),
+
+  endSession: async (completed, moodAfter) => {
+    const { currentSession, mode } = get();
     if (!currentSession) return;
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    const plannedMinutes = currentSession.planned_minutes || 0;
+    const actualMinutes = completed ? plannedMinutes : 0;
+
     const sessionData = {
       ...currentSession,
       user_id: user.id,
-      actual_minutes: completed ? (currentSession.planned_minutes || 0) : 0,
+      actual_minutes: actualMinutes,
       completed,
+      mood_after: moodAfter,
       ended_at: new Date().toISOString(),
     };
 
-    await supabase.from('focus_sessions').insert([sessionData]);
+    const { error } = await supabase.from('focus_sessions').insert([sessionData]);
 
-    if (completed) {
+    if (!error && completed) {
+      set((state) => ({ sessionsCompletedToday: state.sessionsCompletedToday + 1 }));
+      
       // 1. Success notification for the session
       await createNotification(
         user.id,
         'Deep Work Complete! 🎯',
-        `Great job! You just banked ${currentSession.planned_minutes} minutes of focused work.`,
+        `Great job! You just banked ${plannedMinutes} minutes of focused work.`,
         'success',
         '/progress'
       );
@@ -83,7 +126,7 @@ export const useFocusStore = create<FocusStore>((set, get) => ({
       });
 
       const totalToday = stats?.[0]?.total_focus_minutes || 0;
-      const prevTotal = totalToday - (currentSession.planned_minutes || 0);
+      const prevTotal = totalToday - plannedMinutes;
 
       if (totalToday >= 60 && prevTotal < 60) {
         await createNotification(
@@ -95,11 +138,13 @@ export const useFocusStore = create<FocusStore>((set, get) => ({
       }
     }
 
+    const isPomodoro = currentSession.session_type === 'pomodoro';
+
     set({
       currentSession: null,
       isActive: false,
-      timeLeft: 15 * 60,
-      mode: 'work',
+      timeLeft: (isPomodoro && mode === 'work') ? 5 * 60 : 15 * 60,
+      mode: (isPomodoro && mode === 'work') ? 'break' : 'work',
     });
   },
 }));

@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { CheckCircle2, Circle, Trash2, ChevronDown, ChevronRight } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { CheckCircle2, Circle, Trash2, ChevronDown, ChevronRight, Plus } from 'lucide-react-native';
 import { Task } from '@/types';
 import { useTaskStore } from '@/stores/taskStore';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -10,11 +10,19 @@ type Props = {
 };
 
 export default function TaskCard({ task }: Props) {
-  const { toggleTask, deleteTask, toggleChunk, deleteChunk } = useTaskStore();
+  const { toggleTask, deleteTask, toggleChunk, deleteChunk, addChunk } = useTaskStore();
   const { isPro } = useSubscription();
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [newChunkTitle, setNewChunkTitle] = useState('');
 
   const totalChunks = task.chunks?.length || 0;
+
+  const handleAddChunk = () => {
+    if (!newChunkTitle.trim()) return;
+    addChunk(task.id, newChunkTitle.trim());
+    setNewChunkTitle('');
+    setIsExpanded(true);
+  };
 
   return (
     <View className="bg-white dark:bg-gray-900 p-5 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm mb-4">
@@ -55,7 +63,7 @@ export default function TaskCard({ task }: Props) {
       </View>
 
       {/* Subtasks Section */}
-      {isExpanded && isPro && (
+      {(isExpanded || totalChunks === 0) && isPro && (
         <View className="mt-6 ml-10 space-y-3 pt-4 border-t border-gray-50 dark:border-gray-800">
           {task.chunks?.map((chunk) => (
             <View key={chunk.id} className="flex-row items-center gap-3">
@@ -76,6 +84,24 @@ export default function TaskCard({ task }: Props) {
               </TouchableOpacity>
             </View>
           ))}
+          
+          {/* Add Subtask Input Form */}
+          <View className="flex-row gap-2 mt-2 items-center">
+            <TextInput
+              placeholder="Add a subtask..."
+              placeholderTextColor="#9CA3AF"
+              value={newChunkTitle}
+              onChangeText={setNewChunkTitle}
+              className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-xl px-3 py-2 font-medium text-gray-900 dark:text-white text-xs border border-gray-100 dark:border-gray-700"
+            />
+            <TouchableOpacity 
+              onPress={handleAddChunk}
+              disabled={!newChunkTitle.trim()}
+              className="bg-purple-600 p-2 rounded-xl disabled:opacity-50"
+            >
+              <Plus size={16} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </View>
