@@ -8,7 +8,8 @@ import {
   Pressable,
   Animated,
   Dimensions,
-  Easing
+  Easing,
+  Image
 } from 'react-native';
 import {
   Menu,
@@ -46,6 +47,7 @@ export default function TopBar() {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(-320)).current;
 
@@ -270,10 +272,19 @@ export default function TopBar() {
                     backgroundColor: 'rgba(255,255,255,0.15)',
                     borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.35)',
                     alignItems: 'center', justifyContent: 'center',
+                    overflow: 'hidden',
                   }}>
-                    <Text style={{ fontSize: 26, fontWeight: '700', color: 'white' }}>
-                      {displayName[0].toUpperCase()}
-                    </Text>
+                    {profile?.avatar_url && !avatarError ? (
+                      <Image
+                        source={{ uri: profile.avatar_url }}
+                        style={{ width: 68, height: 68, borderRadius: 22 }}
+                        onError={() => setAvatarError(true)}
+                      />
+                    ) : (
+                      <Text style={{ fontSize: 26, fontWeight: '700', color: 'white' }}>
+                        {displayName[0].toUpperCase()}
+                      </Text>
+                    )}
                   </View>
                   <View style={{ alignItems: 'center', gap: 2 }}>
                     <Text style={{ fontSize: 15, fontWeight: '600', color: 'rgba(255,255,255,0.95)' }}>
