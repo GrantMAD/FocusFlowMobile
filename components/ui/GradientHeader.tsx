@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { GRADIENTS } from '@/constants/theme';
 
 interface GradientHeaderProps {
   title: string;
@@ -9,7 +10,7 @@ interface GradientHeaderProps {
 export function GradientHeader({ title, subtitle }: GradientHeaderProps) {
   return (
     <LinearGradient
-      colors={['#7C3AED', '#4F46E5']}
+      colors={GRADIENTS.primary}
       className="pt-4 pb-8 px-8"
     >
       <Text className="text-3xl font-black text-white">{title}</Text>

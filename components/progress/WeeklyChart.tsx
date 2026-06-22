@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { GRADIENTS } from '@/constants/theme';
+
 
 interface WeeklyChartData {
   day: string;
@@ -45,8 +47,9 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
                 <View key={i} className="items-center flex-1">
                   <View className="w-full px-1 items-center justify-end h-full">
                     <LinearGradient
-                      colors={['#7C3AED', '#4F46E5']}
+                      colors={GRADIENTS.primary}
                       className="w-full rounded-t-lg"
+
                       style={{ height: `${height}%`, minHeight: day.minutes > 0 ? 4 : 0 }}
                     />
                   </View>

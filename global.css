@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 
+  Tailwind v4 vs v3 configuration mirror
+  This file aligns classes with focusflow-web's src/app/globals.css
+*/
+
+.glass-card {
+  @apply bg-white/80 dark:bg-gray-900/80 border border-gray-100 dark:border-gray-800;
+}

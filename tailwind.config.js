@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+// Mirrored with focusflow-web's Tailwind CSS v4 @theme structure in globals.css
 module.exports = {
   darkMode: 'class',
   // NOTE: Update this to include the paths to all of your component files.

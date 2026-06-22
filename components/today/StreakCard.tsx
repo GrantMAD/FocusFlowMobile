@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { Streak } from '@/types';
 import { createNotification } from '@/lib/notifications';
+import { GRADIENTS } from '@/constants/theme';
+
 
 export default function StreakCard() {
   const [streak, setStreak] = useState<Streak | null>(null);
@@ -74,8 +76,9 @@ export default function StreakCard() {
 
   return (
     <LinearGradient
-      colors={['#9333EA', '#4F46E5', '#2563EB']}
+      colors={GRADIENTS.primary}
       start={{ x: 0, y: 0 }}
+
       end={{ x: 1, y: 0 }}
       style={{ borderRadius: 24, padding: 24, boxShadow: '0px 4px 12px rgba(0,0,0,0.1)' }}
     >
